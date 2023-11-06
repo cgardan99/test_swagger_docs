@@ -1,0 +1,126 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/cgardan99/CaerusPlayerProps/1.0.0
+  - description: Caerusrisk PlayerProps API
+    url: https://playeprops.api.caerusrisk.com/v1/
+info:
+  title: Caerusrisk PlayerProps API
+  version: 1.0.0
+  description:  |
+    
+    # Authentication 
+    
+    API uses Token authentication, must be alphanumeric (0-9 | a-z | A-Z) and 32 characters long. It must be attatched as URL argument.
+  
+    Example:  
+    
+    `http://superbet.api.caerusrisk.com/v1/snapshot/?token=uXqEj2pV9rSXTZjrSpqRr3hRTbuZg2z0`
+
+    
+  x-logo:
+    url: 'http://goalscorersscot.caerusrisk.com/prd/static/goalscorers_ui/img/CAERUS%20LOGO.png'
+  # contact:
+  #   email: you@your-company.com
+  # license:
+  #   name: Apache 2.0
+  #   url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: playerprops
+    description: All playerprops related endpoints
+paths:
+  /get_playerprops/{matchId}:
+    get:
+      tags:
+        - playerprops
+      parameters:
+        - name: matchId
+          in: path
+          description: Match ID of the desired playerprops
+          required: true
+          example: c338cb9cf320236
+          schema:
+            type: string
+      summary: Get playerprops of an specific match id.
+      description: |
+        It will fetch the match metadata and all the lists with the available markets.
+      responses:
+        '200':
+          description: Match metadata and markets.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerPropsResponse'
+        '400':
+          description: bad match id or token.
+components:
+  schemas:
+    PlayerPropsResponse:
+      type: object
+      properties:
+        match: 
+          $ref: '#/components/schemas/MatchMetadata'
+        market:
+          $ref: '#/components/schemas/PlayerPropsQuotes'
+    MatchMetadata:
+      type: object
+      properties:
+        sportType:
+          type: string
+          description: Sport type
+          example: SOCCER
+          enum: [SOCCER]
+        id:
+          type: string
+          example: c338cb9cf320236
+          description: Unique match id that system provides.
+        league:
+          type: string
+          example: English Premier League
+          description: League where the fixture belongs.
+        host:
+          type: string
+          example: Norwich City
+          description: Host team of the fixture.
+        guest:
+          type: string
+          example: Leicester City
+          description: Guest team of the fixture.
+        start_time:
+          type: number
+          example: 1630159200
+          description: Datetime (UTC Timestamp) of the fixture KO.
+    PlayerPropsQuotes:
+      type: array
+      description: Available playerprops markets, the key will be team_market. Eg. away_anytime_2_plus, home_on_header.
+      items:
+        type: object
+        properties:
+          market_type:
+            type: string
+            example: PlayerAnytimeToScoreAndWin
+            description: Market of the quote. It could be one of the availables.
+            enum: [PlayerAnytimeToAssist,PlayerAnytimeToAssist2,PlayerScoresAndAssists,PlayerAnytimeToScoreAndWin,PlayerAnytimeToScore2,PlayerAnytimeToScore3,PlayerLastToScore,PlayerToBeCarded,PlayerToScoreFreeKick,PlayerToScoreOutsidePA,PlayerToScoreOnHeader,PlayerToBeRedCarded]
+          team_name:
+            type: string
+            example: Norwich City
+            description: Team of the player.
+          player_name:
+            type: string
+            example: Dimitrios Giannoulis
+            description: Player name of the quote.
+          odd:
+            type: number
+            example: 80.47582186999931
+            description: Odds of the player in the current market.
+          is_starting:
+            type: boolean
+            example: true
+            description: Determines if the player is in the projected lineup.
+          result:
+            type: string
+            example: Won
+            enum: [Unknown, Won, Lost, Voided]
+            description: Result of the quote as the fixture progresses.
